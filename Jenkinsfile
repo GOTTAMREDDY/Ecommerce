@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git 'https://github.com/KastroVKiran/Ecommerce-App-Kastro.git'
+                git branch: 'main', credentialsId: 'Git_cred', url: 'https://github.com/GOTTAMREDDY/Ecommerce.git'
             }
         }
 
@@ -67,11 +67,21 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker build -t ${DOCKER_IMAGE} ."
+                        sh "docker build -t projects/${DOCKER_IMAGE} ."
+sh "docker tag projects/${DOCKER_IMAGE}:latest 173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:latest"
                     }
                 }
             }
         }
+stage('ECR login') {
+            steps {
+                script {
+               sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 173640965114.dkr.ecr.us-east-1.amazonaws.com"
+                    
+                }
+            }
+        }
+
 
         stage('Docker Image Scan') {
             steps {
