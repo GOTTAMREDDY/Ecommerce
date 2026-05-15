@@ -95,9 +95,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker push 173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:${BUILD_NUMBER}"
-                    }
+                 sh "docker push 173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:${BUILD_NUMBER}"
+                    
                 }
             }
         }
