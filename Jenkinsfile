@@ -8,8 +8,7 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
-        DOCKER_IMAGE = "projects/ecommerce"
-
+        DOCKER_IMAGE = 'projects/ecommerce'
     }
 
     stages {
@@ -21,19 +20,19 @@ pipeline {
 
         stage('Maven Compile') {
             steps {
-                sh "mvn compile"
+                sh 'mvn compile'
             }
         }
 
         stage('Maven Test') {
             steps {
-                sh "mvn test -DskipTests=true"
+                sh 'mvn test -DskipTests=true'
             }
         }
 
         stage('File System Scan') {
             steps {
-                sh "trivy fs --format table -o trivy-fs-report.html ."
+                sh 'trivy fs --format table -o trivy-fs-report.html .'
             }
         }
 
@@ -50,18 +49,16 @@ pipeline {
             }
         }
 
-
-
         stage('Maven Build') {
             steps {
-                sh "mvn package -DskipTests=true"
+                sh 'mvn package -DskipTests=true'
             }
         }
 
         stage('Publish to Nexus') {
             steps {
                 withMaven(globalMavenSettingsConfig: 'maven-setting', jdk: 'jdk17', maven: 'maven') {
-                    sh "mvn deploy -DskipTests=true"
+                    sh 'mvn deploy -DskipTests=true'
                 }
             }
         }
@@ -69,21 +66,18 @@ pipeline {
         stage('Docker Build & Tag') {
             steps {
                 script {
-                 sh "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ."
-		sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} 173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:${BUILD_NUMBER}"
-                    
+                    sh "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ."
+                    sh "docker tag ${DOCKER_IMAGE}:${BUILD_NUMBER} 173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:${BUILD_NUMBER}"
                 }
             }
         }
-	stage('ECR login') {
+        stage('ECR login') {
             steps {
                 script {
-               sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 173640965114.dkr.ecr.us-east-1.amazonaws.com"
-                    
+                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 173640965114.dkr.ecr.us-east-1.amazonaws.com'
                 }
             }
         }
-
 
         stage('Docker Image Scan') {
             steps {
@@ -95,32 +89,35 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                 sh "docker push 173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:${BUILD_NUMBER}"
-                    
+                    sh "docker push 173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:${BUILD_NUMBER}"
                 }
             }
         }
 
-        stage('Deploy to Container') {
+        // stage('Deploy to Container') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //     docker stop ecommerce-container || true
+        //     docker rm ecommerce-container || true
+        //     '''
 
-    steps {
-
-        script {
-
-            sh '''
-            docker stop ecommerce-container || true
-            docker rm ecommerce-container || true
-            '''
-
-            sh """
-            docker run -d \
-            --name ecommerce-container \
-            -p 8083:8080 \
-            ${DOCKER_IMAGE}:${BUILD_NUMBER}
-            """
+        //             sh """
+        //     docker run -d \
+        //     --name ecommerce-container \
+        //     -p 8083:8080 \
+        //     ${DOCKER_IMAGE}:${BUILD_NUMBER}
+        //     """
+        //         }
+        //     }
+        // }
+    stage('Deploy to Cluster') {
+            steps {
+                script {
+                    sh "kubectlctl apply -f deployment-service.yaml "
+                }
+            }
         }
     }
-}
-    }
-}
 
+}
