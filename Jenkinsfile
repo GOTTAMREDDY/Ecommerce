@@ -79,12 +79,12 @@ pipeline {
             }
         }
 
-        // stage('Docker Image Scan') {
-        //     steps {
-        //         sh "trivy image --format table -o trivy-image-report.html ${DOCKER_IMAGE}:${BUILD_NUMBER}"
-        //         archiveArtifacts artifacts: 'trivy-image-report.html', fingerprint: true
-        //     }
-        // }
+        stage('Docker Image Scan') {
+            steps {
+                sh "trivy image --format table -o trivy-image-report.html ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                archiveArtifacts artifacts: 'trivy-image-report.html', fingerprint: true
+            }
+        }
 
         stage('Push Docker Image') {
             steps {
@@ -114,7 +114,7 @@ pipeline {
     stage('Deploy to Cluster') {
             steps {
                 script {
-                    sh "kubectlctl apply -f deployment-service.yaml "
+                    sh "kubectl apply -f deployment-service.yaml "
                 }
             }
         }
