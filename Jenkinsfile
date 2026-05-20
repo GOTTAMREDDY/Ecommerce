@@ -114,7 +114,8 @@ pipeline {
     stage('Deploy to Cluster') {
             steps {
                 script {
-                    sh "kubectl --kubeconfig=/var/jenkins_home/.kube/config apply -f deployment-service.yaml "
+                    sh "kubectl --kubeconfig=/var/jenkins_home/.kube/config set image deployment/ecommerce-deployment \
+ecommerce=173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:${BUILD_NUMBER}"
                 }
             }
         }
