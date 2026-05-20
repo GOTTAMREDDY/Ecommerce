@@ -18,17 +18,17 @@ pipeline {
             }
         }
 
-        stage('Maven Compile') {
-            steps {
-                sh 'mvn compile'
-            }
-        }
+        // stage('Maven Compile') {
+        //     steps {
+        //         sh 'mvn compile'
+        //     }
+        // }
 
-        stage('Maven Test') {
-            steps {
-                sh 'mvn test -DskipTests=true'
-            }
-        }
+        // stage('Maven Test') {
+        //     steps {
+        //         sh 'mvn test -DskipTests=true'
+        //     }
+        // }
 
         //stage('File System Scan') {
         //    steps {
@@ -49,19 +49,19 @@ pipeline {
         //    }
         //}
 
-        stage('Maven Build') {
-            steps {
-                sh 'mvn package -DskipTests=true'
-            }
-        }
+        // stage('Maven Build') {
+        //     steps {
+        //         sh 'mvn package -DskipTests=true'
+        //     }
+        // }
 
-        stage('Publish to Nexus') {
-            steps {
-                withMaven(globalMavenSettingsConfig: 'maven-setting', jdk: 'jdk17', maven: 'maven') {
-                    sh 'mvn deploy -DskipTests=true'
-                }
-            }
-        }
+        // stage('Publish to Nexus') {
+        //     steps {
+        //         withMaven(globalMavenSettingsConfig: 'maven-setting', jdk: 'jdk17', maven: 'maven') {
+        //             sh 'mvn deploy -DskipTests=true'
+        //         }
+        //     }
+        // }
 
         stage('Docker Build & Tag') {
             steps {
