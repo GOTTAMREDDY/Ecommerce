@@ -114,7 +114,7 @@ pipeline {
     stage('Deploy to Cluster') {
             steps {
                 script {
-                    sh "kubectl apply -f deployment-service.yaml "
+                    sh "kubectl --kubeconfig=/var/jenkins_home/.kube/config apply -f deployment-service.yaml "
                 }
             }
         }
