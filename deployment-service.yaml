@@ -18,10 +18,10 @@ spec:
         - name: ecommerce
           image: 173640965114.dkr.ecr.us-east-1.amazonaws.com/projects/ecommerce:latest # Image that will be used to containers in the cluster
           imagePullPolicy: Always
-          command: ["/bin/sh"]
+          command: ["java"]
           args:
-           - "-c"
-           - "exit 1"
+           - "-jar"
+           - "wrong.jar"
           ports:
             - containerPort: 8080 # The port that the container is running on in the cluster
 
